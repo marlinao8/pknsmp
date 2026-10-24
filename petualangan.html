@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Pendapat di Pegunungan - Kuis PKn SMP</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Family -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['"Fredoka One"', 'cursive'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        skyBlue: '#38bdf8',
+                        mountainGreen: '#15803d',
+                        goldYellow: '#facc15',
+                        quizPurple: '#6366f1',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        /* Continuous Parallax Clouds */
+        @keyframes moveClouds {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-clouds {
+            animation: moveClouds 45s linear infinite;
+        }
+
+        /* 3D Disney/Pixar Stylized Character */
+        .character-shadow {
+            box-shadow: 0 15px 15px rgba(0,0,0,0.25);
+        }
+
+        /* Custom 3D Shiny Buttons */
+        .btn-3d-yellow {
+            background: linear-gradient(180deg, #fef08a 0%, #facc15 50%, #eab308 100%);
+            box-shadow: 0 6px 0 #ca8a04, 0 10px 15px rgba(0,0,0,0.2);
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-3d-yellow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #ca8a04, 0 12px 18px rgba(0,0,0,0.25);
+        }
+        .btn-3d-yellow:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #ca8a04, 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-3d-option {
+            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+            border: 2px solid #cbd5e1;
+            box-shadow: 0 5px 0 #94a3b8, 0 6px 10px rgba(0,0,0,0.08);
+            transition: all 0.12s ease;
+        }
+        .btn-3d-option:hover {
+            border-color: #6366f1;
+            background: linear-gradient(180deg, #e0e7ff 0%, #c7d2fe 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 0 #4f46e5, 0 8px 12px rgba(99,102,241,0.2);
+        }
+        .btn-3d-option:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #4f46e5;
+        }
+
+        /* Game Show Glow Card */
+        .quiz-card-glow {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.3), 0 12px 0 #64748b, 0 20px 30px rgba(0,0,0,0.25);
+            border: 4px solid #818cf8;
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Pulse Sun Glow */
+        @keyframes sunGlow {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        .animate-sun {
+            animation: sunGlow 4s ease-in-out infinite;
+        }
+
+        /* Smooth character leap arc */
+        .jumping-arc {
+            transition: all 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-800 h-screen w-screen relative overflow-hidden select-none">
+
+    <!-- MAIN GAME CONTAINER -->
+    <div id="app" class="relative w-full h-full flex flex-col justify-between items-center bg-gradient-to-b from-sky-400 via-sky-300 to-emerald-200">
+
+        <!-- PARALLAX BACKGROUND LAYER -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+            <!-- Sun & Sky Rays -->
+            <div class="absolute top-4 left-10 w-28 h-28 bg-amber-200 rounded-full blur-xl animate-sun"></div>
+            <div class="absolute top-6 left-12 w-24 h-24 bg-amber-300 rounded-full shadow-lg shadow-amber-300/50 flex items-center justify-center">
+                <i class="fa-solid font-bold fa-sun text-amber-500 text-5xl animate-spin" style="animation-duration: 25s;"></i>
+            </div>
+
+            <!-- Moving Clouds -->
+            <div class="absolute top-8 left-0 w-[200%] h-24 flex gap-12 opacity-90 animate-clouds">
+                <div class="bg-white/80 backdrop-blur-sm px-8 py-4 rounded-full shadow-md text-slate-300 flex items-center gap-3"><i class="fa-solid fa-cloud text-4xl text-white"></i></div>
+                <div class="bg-white/70 backdrop-blur-sm px-12 py-5 rounded-full shadow-md text-slate-300 flex items-center gap-3"><i class="fa-solid fa-cloud text-5xl text-white"></i></div>
+                <div class="bg-white/90 backdrop-blur-sm px-10 py-4 rounded-full shadow-md text-slate-300 flex items-center gap-3"><i class="fa-solid fa-cloud text-4xl text-white"></i></div>
+                <div class="bg-white/80 backdrop-blur-sm px-8 py-4 rounded-full shadow-md text-slate-300 flex items-center gap-3"><i class="fa-solid fa-cloud text-4xl text-white"></i></div>
+                <div class="bg-white/70 backdrop-blur-sm px-12 py-5 rounded-full shadow-md text-slate-300 flex items-center gap-3"><i class="fa-solid fa-cloud text-5xl text-white"></i></div>
+            </div>
+
+            <!-- SVG Mountain Scenery (3D Layered Effect) -->
+            <!-- Back Mountains -->
+            <svg class="absolute bottom-16 w-full h-2/3" viewBox="0 0 1200 500" preserveAspectRatio="none">
+                <path d="M0,500 L200,180 L450,450 L700,120 L950,400 L1200,200 L1200,500 Z" fill="#065f46" opacity="0.6"/>
+                <!-- Snow caps -->
+                <polygon points="200,180 170,230 230,230" fill="#ffffff" opacity="0.9"/>
+                <polygon points="700,120 660,180 740,180" fill="#ffffff" opacity="0.9"/>
+            </svg>
+
+            <!-- Middle Mountains -->
+            <svg class="absolute bottom-10 w-full h-1/2" viewBox="0 0 1200 400" preserveAspectRatio="none">
+                <path d="M0,400 L300,120 L600,380 L900,100 L1200,350 L1200,400 Z" fill="#047857" opacity="0.85"/>
+                <polygon points="300,120 260,180 340,180" fill="#ffffff" opacity="0.8"/>
+                <polygon points="900,100 850,170 950,170" fill="#ffffff" opacity="0.8"/>
+            </svg>
+
+            <!-- Front Hills -->
+            <svg class="absolute bottom-0 w-full h-1/3" viewBox="0 0 1200 300" preserveAspectRatio="none">
+                <path d="M0,300 C300,180 500,280 800,150 C1000,80 1100,220 1200,180 L1200,300 Z" fill="#10b981"/>
+                <path d="M0,300 C200,120 400,250 700,180 C900,120 1050,250 1200,200 L1200,300 Z" fill="#059669" opacity="0.7"/>
+            </svg>
+        </div>
+
+        <!-- TOP INTERACTIVE UI HEADER -->
+        <header class="relative z-20 w-full max-w-5xl px-4 pt-3 flex items-center justify-between gap-2">
+            <!-- Score & Level Badge -->
+            <div class="flex items-center gap-3">
+                <div class="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl border-2 border-amber-300 shadow-lg flex items-center gap-2">
+                    <span class="text-amber-500 text-xl"><i class="fa-solid fa-trophy"></i></span>
+                    <div>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">SKOR</div>
+                        <div id="ui-score" class="font-fredoka text-xl text-slate-800 leading-none">0</div>
+                    </div>
+                </div>
+
+                <div class="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl border-2 border-indigo-300 shadow-lg flex items-center gap-2">
+                    <span class="text-indigo-500 text-xl"><i class="fa-solid fa-mountain-flag"></i></span>
+                    <div>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">LOMPATAN</div>
+                        <div class="font-fredoka text-xl text-slate-800 leading-none"><span id="ui-level">1</span>/10</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Title Badge (Game Show style) -->
+            <div class="hidden md:flex bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-fredoka px-6 py-2 rounded-full border-2 border-white/50 shadow-xl items-center gap-2 text-lg tracking-wide animate-float">
+                <i class="fa-solid fa-crown text-amber-300"></i> PKN EXPLORER SHOW
+            </div>
+
+            <!-- Lives & Controls -->
+            <div class="flex items-center gap-2">
+                <!-- Lives Stars -->
+                <div class="bg-white/90 backdrop-blur-md px-3 py-2 rounded-2xl border-2 border-rose-300 shadow-lg flex items-center gap-1" id="ui-lives">
+                    <i class="fa-solid fa-heart text-rose-500 text-lg"></i>
+                    <i class="fa-solid fa-heart text-rose-500 text-lg"></i>
+                    <i class="fa-solid fa-heart text-rose-500 text-lg"></i>
+                </div>
+
+                <!-- Audio Toggle Button -->
+                <button id="btn-audio" onclick="toggleAudio()" class="w-11 h-11 bg-white/90 hover:bg-white text-indigo-600 rounded-2xl border-2 border-indigo-200 shadow-lg flex items-center justify-center transition-transform active:scale-95 text-lg">
+                    <i id="audio-icon" class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- EXPLORER STAGE & PATHWAY (MIDDLE SECTION) -->
+        <main class="relative z-10 w-full max-w-5xl h-48 sm:h-56 my-auto px-4 flex flex-col justify-end">
+            <!-- 10 Mountain Platform Stepping Stones -->
+            <div id="platforms-container" class="relative w-full h-24 flex justify-between items-end px-2 sm:px-6">
+                <!-- JavaScript will populate 10 responsive 3D platforms here -->
+            </div>
+
+            <!-- 3D Disney/Pixar Stylized Explorer Character -->
+            <div id="explorer-character" class="absolute bottom-6 left-0 w-16 h-20 sm:w-20 sm:h-24 pointer-events-none jumping-arc z-20" style="transform: translateX(0px);">
+                <div class="relative w-full h-full flex flex-col items-center">
+                    <!-- Disney Character SVG Render -->
+                    <svg viewBox="0 0 100 120" class="w-full h-full drop-shadow-xl">
+                        <!-- Backpack -->
+                        <rect x="20" y="45" width="60" height="40" rx="10" fill="#b45309" stroke="#78350f" stroke-width="3"/>
+                        <rect x="25" y="55" width="50" height="20" rx="5" fill="#d97706"/>
+
+                        <!-- Explorer Body/Jacket -->
+                        <path d="M30,50 Q50,45 70,50 L75,90 Q50,95 25,90 Z" fill="#0284c7" stroke="#0369a1" stroke-width="3"/>
+                        <!-- Shirt Collar -->
+                        <polygon points="40,50 50,65 60,50" fill="#ffffff"/>
+                        <!-- Scarf/Bandana -->
+                        <path d="M35,48 Q50,58 65,48 L50,62 Z" fill="#ef4444"/>
+
+                        <!-- Explorer Head (Disney Cute Style) -->
+                        <circle cx="50" cy="35" r="22" fill="#fde047" stroke="#eab308" stroke-width="2"/> <!-- Cute Head base -->
+                        <circle cx="50" cy="35" r="20" fill="#fbcfe8"/> <!-- Soft skin tone -->
+
+                        <!-- Big Expressive Eyes -->
+                        <ellipse cx="42" cy="32" rx="4" ry="6" fill="#1e293b"/>
+                        <circle cx="43" cy="30" r="1.8" fill="#ffffff"/>
+                        <ellipse cx="58" cy="32" rx="4" ry="6" fill="#1e293b"/>
+                        <circle cx="59" cy="30" r="1.8" fill="#ffffff"/>
+
+                        <!-- Cheeks -->
+                        <circle cx="36" cy="38" r="3" fill="#f43f5e" opacity="0.4"/>
+                        <circle cx="64" cy="38" r="3" fill="#f43f5e" opacity="0.4"/>
+
+                        <!-- Cute Smile -->
+                        <path d="M44,40 Q50,46 56,40" fill="none" stroke="#881337" stroke-width="2.5" stroke-linecap="round"/>
+
+                        <!-- Explorer Safari Hat -->
+                        <path d="M20,25 Q50,15 80,25 L85,28 Q50,22 15,28 Z" fill="#ca8a04"/>
+                        <path d="M32,24 Q50,5 68,24 Z" fill="#eab308" stroke="#a16207" stroke-width="2"/>
+                        <!-- Red Hat Band -->
+                        <path d="M32,22 Q50,16 68,22" stroke="#dc2626" stroke-width="3" fill="none"/>
+
+                        <!-- Legs & Boots -->
+                        <rect x="35" y="88" width="10" height="18" rx="4" fill="#a16207"/>
+                        <rect x="55" y="88" width="10" height="18" rx="4" fill="#a16207"/>
+                        <ellipse cx="38" cy="106" rx="8" ry="4" fill="#451a03"/>
+                        <ellipse cx="62" cy="106" rx="8" ry="4" fill="#451a03"/>
+                    </svg>
+                </div>
+            </div>
+        </main>
+
+        <!-- GAME SHOW QUIZ CARD (BOTTOM SECTION) -->
+        <section class="relative z-20 w-full max-w-3xl px-4 pb-4">
+            <div class="quiz-card-glow rounded-3xl p-4 sm:p-6 text-center relative overflow-hidden">
+                <!-- Spotlight Background FX inside Card -->
+                <div class="absolute -top-12 left-1/2 -translate-x-1/2 w-64 h-32 bg-indigo-400/20 blur-2xl rounded-full pointer-events-none"></div>
+
+                <!-- Vocab Badge Banner -->
+                <div class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-fredoka px-5 py-1.5 rounded-full text-xs sm:text-sm uppercase tracking-wider mb-3 shadow-md border border-indigo-300">
+                    <i class="fa-solid fa-lightbulb text-amber-300 animate-pulse"></i>
+                    <span id="quiz-vocab">VOCAB: KEMERDEKAAN BERPENDAPAT</span>
+                </div>
+
+                <!-- Question Text -->
+                <h2 id="quiz-question" class="text-base sm:text-xl font-extrabold text-slate-800 mb-4 sm:mb-6 leading-snug min-h-[50px] flex items-center justify-center">
+                    Memuat pertanyaan tantangan...
+                </h2>
+
+                <!-- 4 Interactive Option Buttons -->
+                <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                    <!-- Dynamic Option Buttons generated by JS -->
+                </div>
+
+                <!-- Explanation Feedback Bar -->
+                <div id="quiz-feedback" class="hidden mt-3 p-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all">
+                    <!-- Feedback text inserted here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- OVERLAY: START / GAME OVER SCREEN -->
+        <div id="overlay-screen" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl border-4 border-amber-400 p-6 sm:p-8 max-w-lg w-full text-center shadow-2xl relative overflow-hidden animate-float">
+                <!-- Decorative Top Lights -->
+                <div class="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400"></div>
+
+                <div id="overlay-content">
+                    <div class="w-24 h-24 mx-auto mb-4 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 text-5xl shadow-inner border-2 border-amber-300">
+                        <i class="fa-solid fa-mountain-sun"></i>
+                    </div>
+
+                    <h1 class="font-fredoka text-2xl sm:text-4xl text-slate-800 mb-2 tracking-wide">PETUALANGAN PENDAPAT</h1>
+                    <p class="text-xs sm:text-sm font-bold text-indigo-600 mb-4 uppercase tracking-wider">Gim Kuis PKn SMP - Hak Kemerdekaan Berpendapat</p>
+
+                    <div class="bg-sky-50 rounded-2xl p-4 border border-sky-200 text-slate-600 text-xs sm:text-sm mb-6 text-left space-y-2">
+                        <p class="flex items-center gap-2"><i class="fa-solid fa-compass text-sky-500"></i> Jelajahi 10 lompatan platform pegunungan indah.</p>
+                        <p class="flex items-center gap-2"><i class="fa-solid fa-bullhorn text-indigo-500"></i> Pelajari kata kunci & tuntaskan kuis game show PKn.</p>
+                        <p class="flex items-center gap-2"><i class="fa-solid fa-star text-amber-500"></i> Raih skor 100 dan dapatkan 3 bintang emas!</p>
+                    </div>
+
+                    <button onclick="startGame()" class="btn-3d-yellow w-full py-4 rounded-2xl font-fredoka text-xl text-amber-950 tracking-wide flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-play text-2xl"></i> MULAI PETUALANGAN
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- OVERLAY: VICTORY / RESULTS SCREEN -->
+        <div id="victory-screen" class="hidden fixed inset-0 z-50 bg-slate-900/85 backdrop-blur-md flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl border-4 border-indigo-400 p-6 sm:p-8 max-w-lg w-full text-center shadow-2xl relative overflow-hidden">
+                <!-- Confetti Light Header -->
+                <div class="w-28 h-28 mx-auto mb-3 bg-gradient-to-tr from-amber-300 to-yellow-100 rounded-full flex items-center justify-center text-amber-500 text-6xl shadow-xl border-4 border-amber-300 animate-bounce">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+
+                <h2 class="font-fredoka text-3xl text-slate-800 mb-1">SELAMAT! PENJELAJAH SEJATI!</h2>
+                <p class="text-xs sm:text-sm text-slate-500 font-semibold mb-4">Kamu berhasil menaklukkan 10 Puncak Pegunungan Kemerdekaan Berpendapat!</p>
+
+                <!-- Stars Rating -->
+                <div id="victory-stars" class="flex justify-center gap-2 text-3xl sm:text-4xl text-amber-400 mb-4">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                </div>
+
+                <!-- Score Board Card -->
+                <div class="bg-slate-100 rounded-2xl p-4 border border-slate-200 mb-6 flex justify-around items-center">
+                    <div>
+                        <div class="text-xs text-slate-400 font-bold uppercase">Skor Akhir</div>
+                        <div id="final-score" class="font-fredoka text-3xl text-indigo-600">100</div>
+                    </div>
+                    <div class="h-10 w-px bg-slate-300"></div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-bold uppercase">Akurasi PKn</div>
+                        <div id="final-accuracy" class="font-fredoka text-3xl text-emerald-600">100%</div>
+                    </div>
+                </div>
+
+                <button onclick="startGame()" class="btn-3d-yellow w-full py-4 rounded-2xl font-fredoka text-xl text-amber-950 tracking-wide flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-rotate-right text-xl"></i> MAIN LAGI
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* ----------------------------------------------------
+           1. GAME DATA: 10 PKN SMP QUESTIONS & VOCAB
+        ---------------------------------------------------- */
+        const quizData = [
+            {
+                vocab: "VOCAB: KEMERDEKAAN BERPENDAPAT",
+                question: "Apa makna utama dari Hak Kemerdekaan Menyampaikan Pendapat bagi setiap warga negara Indonesia?",
+                options: [
+                    "Hak bebas menyampaikan gagasan tanpa melanggar hukum dan etika",
+                    "Kebebasan mutlak berbicara tanpa batas aturan apapun",
+                    "Hak untuk memaksakan pendapat pribadi kepada orang lain",
+                    "Kebebasan yang hanya berlaku untuk kalangan pejabat negara"
+                ],
+                answer: 0,
+                explanation: "Kemerdekaan berpendapat adalah hak setiap warga negara untuk menyampaikan pikiran secara bebas dan bertanggung jawab sesuai UU."
+            },
+            {
+                vocab: "VOCAB: PASAL 28E AYAT (3) UUD 1945",
+                question: "Pasal dalam UUD NRI 1945 yang menegaskan bahwa 'Setiap orang berhak atas kebebasan berserikat, berkumpul, dan mengeluarkan pendapat' adalah...",
+                options: [
+                    "Pasal 30 Ayat (1)",
+                    "Pasal 28E Ayat (3)",
+                    "Pasal 33 Ayat (2)",
+                    "Pasal 27 Ayat (1)"
+                ],
+                answer: 1,
+                explanation: "Pasal 28E Ayat (3) UUD 1945 merupakan landasan konstitusional utama jaminan kebebasan berpendapat di Indonesia."
+            },
+            {
+                vocab: "VOCAB: UU NO. 9 TAHUN 1998",
+                question: "Undang-Undang Republik Indonesia yang secara khusus mengatur tentang Kemerdekaan Menyampaikan Pendapat di Muka Umum adalah...",
+                options: [
+                    "UU No. 20 Tahun 2003",
+                    "UU No. 39 Tahun 1999",
+                    "UU No. 9 Tahun 1998",
+                    "UU No. 12 Tahun 2006"
+                ],
+                answer: 2,
+                explanation: "UU No. 9 Tahun 1998 merupakan payung hukum tata cara penyampaian aspirasi publik di muka umum secara tertib."
+            },
+            {
+                vocab: "VOCAB: UNJUK RASA / DEMONSTRASI",
+                question: "Penyampaian pendapat secara bersama-sama di tempat terbuka untuk menyatakan aspirasi atau protes dinamakan...",
+                options: [
+                    "Unjuk Rasa / Demonstrasi",
+                    "Rapat Internal Musyawarah",
+                    "Mimbar Bebas Terbatas",
+                    "Pawai Budaya Nusantara"
+                ],
+                answer: 0,
+                explanation: "Unjuk rasa adalah salah satu bentuk sah penyampaian pendapat di muka umum menurut UU No. 9 Tahun 1998."
+            },
+            {
+                vocab: "VOCAB: ASAS TANGGUNG JAWAB & ETIKA",
+                question: "Contoh penerapaan kebebasan berpendapat yang bertanggung jawab di media sosial adalah...",
+                options: [
+                    "Menyebarkan kabar berita yang belum jelas kebenarannya (hoaks)",
+                    "Menyampaikan kritik santun berbasis data jujur tanpa ujaran kebencian",
+                    "Menggunakan akun palsu untuk mencaci pendapat teman",
+                    "Menyerang ranah pribadi orang lain saat berbeda pandangan"
+                ],
+                answer: 1,
+                explanation: "Kebebasan di media sosial harus diimbangi etika, kelayakan data, serta rasa hormat terhadap sesama."
+            },
+            {
+                vocab: "VOCAB: BATASAN HUKUM & KETERTIBAN",
+                question: "Berikut ini tindakan penyampaian pendapat yang DILARANG oleh hukum karena melanggar ketertiban adalah...",
+                options: [
+                    "Mengadakan diskusi ilmiah publik di dalam kampus",
+                    "Merusak sarana publik dan memblokir jalan umum",
+                    "Menulis artikel aspirasi di koran atau portal berita",
+                    "Mengirimkan surat aspirasi resmi ke DPR"
+                ],
+                answer: 1,
+                explanation: "Penyampaian pendapat tidak boleh merusak fasilitas publik, mengganggu ketertiban umum, atau anarkis."
+            },
+            {
+                vocab: "VOCAB: PEMBERITAHUAN TERTULIS (POLRI)",
+                question: "Sebelum melaksanakan unjuk rasa di tempat umum, pihak penyelenggara wajib memberikan surat pemberitahuan tertulis kepada...",
+                options: [
+                    "Kepolisian Negara Republik Indonesia (Polri)",
+                    "Kepala Sekolah dan Guru Pembina",
+                    "Kementerian Pendidikan dan Kebudayaan",
+                    "Pemerintah Daerah setempat saja"
+                ],
+                answer: 0,
+                explanation: "Pemberitahuan kepada Polri bertujuan agar kegiatan dikawal dan kebebasan umum tetap terjaga."
+            },
+            {
+                vocab: "VOCAB: MUSYAWARAH MUFAKAT",
+                question: "Bentuk penyampaian pendapat terbaik di lingkungan sekolah untuk mengambil keputusan bersama adalah...",
+                options: [
+                    "Musyawarah mufakat kelas",
+                    "Debat panas saling menjatuhkan",
+                    "Aksi mogok belajar bersama",
+                    "Pemaksaan kehendak oleh ketua kelas"
+                ],
+                answer: 0,
+                explanation: "Musyawarah mufakat mencerminkan nilai Sila Ke-4 Pancasila dalam menghargai aspirasi di sekolah."
+            },
+            {
+                vocab: "VOCAB: TOLERANSI & PENGHORMATAN",
+                question: "Sikap positif kita ketika pendapat kita tidak terpilih dalam keputusan musyawarah kelas adalah...",
+                options: [
+                    "Menerima dengan lapang dada dan melaksanakan keputusan bersamanya",
+                    "Keluar dari ruang kelas dan menolak hasil keputusan",
+                    "Memusuhi teman-teman yang tidak sependapat",
+                    "Menyebarkan prasangka buruk kepada pimpinan diskusi"
+                ],
+                answer: 0,
+                explanation: "Menghargai hasil keputusan bersama merupakan wujud tingginya kedewasaan berdemokrasi."
+            },
+            {
+                vocab: "VOCAB: DEMOKRASI PANCASILA",
+                question: "Sistem demokrasi yang dianut bangsa Indonesia dalam kebebasan berpendapat dijiwai oleh nilai-nilai...",
+                options: [
+                    "Pancasila dan UUD 1945",
+                    "Individualisme Bebas",
+                    "Liberalisme Murni",
+                    "Otoriter Terpimpin"
+                ],
+                answer: 0,
+                explanation: "Demokrasi Pancasila menjamin kebebasan berpendapat dengan mengutamakan keselarasan, keadilan, dan persatuan."
+            }
+        ];
+
+        /* ----------------------------------------------------
+           2. GAME STATE VARIABLES
+        ---------------------------------------------------- */
+        let currentStep = 0;
+        let score = 0;
+        let lives = 3;
+        let audioMuted = false;
+        let isAnsweringLocked = false;
+
+        /* ----------------------------------------------------
+           3. WEB AUDIO API SYNTHESIZER (BGM & SFX)
+        ---------------------------------------------------- */
+        let audioCtx = null;
+        let bgmInterval = null;
+        let bgmStep = 0;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Sound Effect Generator
+        function playSFX(type) {
+            if (audioMuted) return;
+            initAudio();
+
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'jump') {
+                // Cartoon "Boing!" jump SFX
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.exponentialRampToValueAtTime(650, now + 0.25);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'correct') {
+                // Game Show Chime SFX
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, idx) => {
+                    const noteOsc = audioCtx.createOscillator();
+                    const noteGain = audioCtx.createGain();
+                    noteOsc.type = 'triangle';
+                    noteOsc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                    noteGain.gain.setValueAtTime(0.25, now + idx * 0.08);
+                    noteGain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.3);
+                    noteOsc.connect(noteGain);
+                    noteGain.connect(audioCtx.destination);
+                    noteOsc.start(now + idx * 0.08);
+                    noteOsc.stop(now + idx * 0.08 + 0.3);
+                });
+            } else if (type === 'wrong') {
+                // Game Show Buzzer SFX
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.setValueAtTime(110, now + 0.12);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'victory') {
+                // Fanfare Melody SFX
+                const fanfare = [523.25, 523.25, 523.25, 659.25, 783.99, 1046.50];
+                const durations = [0.12, 0.12, 0.12, 0.2, 0.2, 0.5];
+                let timeOffset = 0;
+                fanfare.forEach((freq, i) => {
+                    const noteOsc = audioCtx.createOscillator();
+                    const noteGain = audioCtx.createGain();
+                    noteOsc.type = 'triangle';
+                    noteOsc.frequency.setValueAtTime(freq, now + timeOffset);
+                    noteGain.gain.setValueAtTime(0.3, now + timeOffset);
+                    noteGain.gain.exponentialRampToValueAtTime(0.01, now + timeOffset + durations[i]);
+                    noteOsc.connect(noteGain);
+                    noteGain.connect(audioCtx.destination);
+                    noteOsc.start(now + timeOffset);
+                    noteOsc.stop(now + timeOffset + durations[i]);
+                    timeOffset += durations[i] + 0.04;
+                });
+            }
+        }
+
+        // Dynamic Background Music Synthesizer (Cheerful Adventure Melody)
+        function startBGM() {
+            if (bgmInterval || audioMuted) return;
+            initAudio();
+
+            const melody = [
+                261.63, 329.63, 392.00, 523.25, 392.00, 329.63,
+                293.66, 349.23, 440.00, 587.33, 440.00, 349.23,
+                329.63, 392.00, 493.88, 659.25, 493.88, 392.00,
+                349.23, 392.00, 440.00, 523.25, 440.00, 392.00
+            ];
+
+            bgmStep = 0;
+            bgmInterval = setInterval(() => {
+                if (audioMuted || !audioCtx) return;
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(melody[bgmStep], now);
+                gain.gain.setValueAtTime(0.04, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.22);
+
+                bgmStep = (bgmStep + 1) % melody.length;
+            }, 250);
+        }
+
+        function stopBGM() {
+            if (bgmInterval) {
+                clearInterval(bgmInterval);
+                bgmInterval = null;
+            }
+        }
+
+        function toggleAudio() {
+            audioMuted = !audioMuted;
+            const icon = document.getElementById('audio-icon');
+            if (audioMuted) {
+                icon.className = 'fa-solid fa-volume-xmark text-rose-500';
+                stopBGM();
+            } else {
+                icon.className = 'fa-solid fa-volume-high text-indigo-600';
+                startBGM();
+            }
+        }
+
+        /* ----------------------------------------------------
+           4. GAME MECHANICS & RENDER FUNCTIONS
+        ---------------------------------------------------- */
+        function renderPlatforms() {
+            const container = document.getElementById('platforms-container');
+            container.innerHTML = '';
+
+            for (let i = 0; i < 10; i++) {
+                const plat = document.createElement('div');
+                plat.id = `platform-${i}`;
+                plat.className = `relative flex flex-col items-center justify-end transition-all duration-300 w-7 sm:w-10`;
+
+                // Platform Stone Design
+                plat.innerHTML = `
+                    <div class="plat-badge w-5 h-5 sm:w-7 sm:h-7 rounded-full text-[10px] sm:text-xs font-fredoka flex items-center justify-center mb-1 border shadow-md transition-all ${
+                        i === currentStep 
+                            ? 'bg-amber-400 text-slate-900 border-white scale-125 animate-bounce' 
+                            : i < currentStep 
+                            ? 'bg-emerald-500 text-white border-emerald-300' 
+                            : 'bg-slate-200 text-slate-500 border-slate-300'
+                    }">
+                        ${i + 1}
+                    </div>
+                    <div class="plat-stone w-full h-6 sm:h-8 rounded-t-xl border-t-4 border-amber-300 bg-gradient-to-b from-amber-700 to-amber-900 shadow-lg"></div>
+                `;
+                container.appendChild(plat);
+            }
+        }
+
+        function updateExplorerPosition() {
+            const currentPlat = document.getElementById(`platform-${currentStep}`);
+            const character = document.getElementById('explorer-character');
+            
+            if (currentPlat && character) {
+                const platRect = currentPlat.getBoundingClientRect();
+                const containerRect = document.getElementById('platforms-container').getBoundingClientRect();
+                
+                // Calculate horizontal position
+                const targetX = (platRect.left - containerRect.left) + (platRect.width / 2) - 35;
+                
+                // Set character position with smooth transition
+                character.style.transform = `translateX(${targetX}px)`;
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('ui-score').innerText = score;
+            document.getElementById('ui-level').innerText = currentStep + 1;
+
+            // Render Lives Hearts
+            const livesContainer = document.getElementById('ui-lives');
+            livesContainer.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const heart = document.createElement('i');
+                heart.className = `fa-solid fa-heart text-lg transition-transform ${
+                    i < lives ? 'text-rose-500 scale-100' : 'text-slate-300 scale-90'
+                }`;
+                livesContainer.appendChild(heart);
+            }
+        }
+
+        function loadQuiz() {
+            if (currentStep >= quizData.length) {
+                endGame(true);
+                return;
+            }
+
+            isAnsweringLocked = false;
+            const q = quizData[currentStep];
+
+            // Hide Feedback Bar
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.className = "hidden";
+
+            // Set Vocab & Question
+            document.getElementById('quiz-vocab').innerText = q.vocab;
+            document.getElementById('quiz-question').innerText = q.question;
+
+            // Render Options
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            const optionLabels = ['A', 'B', 'C', 'D'];
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-3d-option w-full p-3 sm:p-4 rounded-2xl text-left font-bold text-xs sm:text-sm text-slate-700 flex items-start gap-3 transition-all`;
+                btn.onclick = () => handleAnswer(idx, btn);
+                btn.innerHTML = `
+                    <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-fredoka text-xs shrink-0">${optionLabels[idx]}</span>
+                    <span class="leading-tight">${optText}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            renderPlatforms();
+            updateExplorerPosition();
+            updateUI();
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            if (isAnsweringLocked) return;
+            isAnsweringLocked = true;
+
+            const q = quizData[currentStep];
+            const feedback = document.getElementById('quiz-feedback');
+            const character = document.getElementById('explorer-character');
+
+            if (selectedIndex === q.answer) {
+                // CORRECT ANSWER
+                playSFX('correct');
+                score += 10;
+                
+                // Style Option Button Correct
+                btnElement.classList.remove('btn-3d-option');
+                btnElement.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600', 'shadow-emerald-700');
+
+                // Feedback UI
+                feedback.className = "mt-3 p-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 bg-emerald-100 text-emerald-800 border border-emerald-300";
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check text-lg text-emerald-600"></i> ${q.explanation}`;
+
+                // Leap Character Arc
+                setTimeout(() => {
+                    playSFX('jump');
+                    character.classList.add('-translate-y-12');
+                    setTimeout(() => {
+                        character.classList.remove('-translate-y-12');
+                    }, 350);
+                }, 200);
+
+                // Advance Level after Delay
+                setTimeout(() => {
+                    currentStep++;
+                    if (currentStep < 10) {
+                        loadQuiz();
+                    } else {
+                        endGame(true);
+                    }
+                }, 1600);
+
+            } else {
+                // WRONG ANSWER
+                playSFX('wrong');
+                lives--;
+                
+                // Style Option Button Wrong
+                btnElement.classList.remove('btn-3d-option');
+                btnElement.classList.add('bg-rose-500', 'text-white', 'border-rose-600', 'shadow-rose-700');
+
+                // Shake Card Animation
+                const card = document.querySelector('.quiz-card-glow');
+                card.classList.add('animate-bounce');
+                setTimeout(() => card.classList.remove('animate-bounce'), 500);
+
+                // Feedback UI
+                feedback.className = "mt-3 p-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 bg-rose-100 text-rose-800 border border-rose-300";
+                feedback.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-lg text-rose-600"></i> Jawaban kurang tepat! Coba pelajari materi lompatan ini lagi.`;
+
+                updateUI();
+
+                if (lives <= 0) {
+                    setTimeout(() => endGame(false), 1200);
+                } else {
+                    setTimeout(() => {
+                        isAnsweringLocked = false;
+                        feedback.className = "hidden";
+                        btnElement.classList.remove('bg-rose-500', 'text-white', 'border-rose-600');
+                        btnElement.classList.add('btn-3d-option');
+                    }, 1500);
+                }
+            }
+        }
+
+        function startGame() {
+            playSFX('click');
+            startBGM();
+
+            currentStep = 0;
+            score = 0;
+            lives = 3;
+
+            document.getElementById('overlay-screen').classList.add('hidden');
+            document.getElementById('victory-screen').classList.add('hidden');
+
+            loadQuiz();
+            window.addEventListener('resize', updateExplorerPosition);
+        }
+
+        function endGame(isVictory) {
+            stopBGM();
+            if (isVictory) {
+                playSFX('victory');
+                
+                // Trigger Confetti FX
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 120,
+                        spread: 80,
+                        origin: { y: 0.6 }
+                    });
+                }
+
+                // Calculate Star Rating
+                const starsContainer = document.getElementById('victory-stars');
+                starsContainer.innerHTML = '';
+                const starCount = lives === 3 ? 3 : lives === 2 ? 2 : 1;
+                for (let i = 0; i < 3; i++) {
+                    starsContainer.innerHTML += `<i class="fa-solid fa-star ${i < starCount ? 'text-amber-400' : 'text-slate-300'}"></i>`;
+                }
+
+                document.getElementById('final-score').innerText = score;
+                document.getElementById('final-accuracy').innerText = `${(score / 100) * 100}%`;
+                document.getElementById('victory-screen').classList.remove('hidden');
+            } else {
+                // Game Over Overlay Display
+                const overlay = document.getElementById('overlay-screen');
+                const content = document.getElementById('overlay-content');
+                
+                content.innerHTML = `
+                    <div class="w-20 h-20 mx-auto mb-3 bg-rose-100 rounded-full flex items-center justify-center text-rose-500 text-4xl shadow-inner border-2 border-rose-300">
+                        <i class="fa-solid fa-heart-crack"></i>
+                    </div>
+                    <h2 class="font-fredoka text-2xl text-slate-800 mb-1">KESEMPATAN HABIS!</h2>
+                    <p class="text-xs text-slate-500 mb-4">Jangan berkecil hati, mari pelajari kembali materi PKn Hak Kemerdekaan Berpendapat!</p>
+                    <div class="bg-amber-50 rounded-2xl p-3 border border-amber-200 text-slate-700 text-xs mb-5">
+                        Skor yang berhasil diraih: <strong class="text-indigo-600 font-fredoka text-lg">${score}</strong>
+                    </div>
+                    <button onclick="startGame()" class="btn-3d-yellow w-full py-3.5 rounded-2xl font-fredoka text-lg text-amber-950 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> COBA LAGI
+                    </button>
+                `;
+                overlay.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
